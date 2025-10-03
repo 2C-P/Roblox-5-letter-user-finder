@@ -16,8 +16,8 @@ init()
 # List of banned substrings (case-insensitive)
 banned_words = [
     "FUC", "FUK", "ASS", "SEX", "DIK", "DIH", "KYS", "BAO", 
-    "NIG", "SHT", "KKK", "HOE", "DCK", "DKS", "SLT", "CUM", 
-    "SMN", "FCK", "FAG", "GAY", "PUS"
+    "NIG", "SHT", "SHIT", "KKK", "HOE", "DCK", "DKS", "SLT", 
+    "CUM", "SMN", "FCK", "FAG", "GAY", "PUS"
 ]
 
 # File to store tried usernames

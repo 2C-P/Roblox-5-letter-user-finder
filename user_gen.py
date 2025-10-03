@@ -1,4 +1,4 @@
-import requests, colorama, random, threading, sys, os, time
+import requests, colorama, random, threading, sys, os, time, re
 from colorama import init, Fore
 from dhooks import Webhook, Embed
 
@@ -38,11 +38,30 @@ def namegen():
     return ''.join(random.choice(letters) for _ in range(length))
 
 def is_valid_username(name):
-    """Check if username contains any banned words (case-insensitive)."""
+    """Check if username contains banned words or specific patterns."""
     name_upper = name.upper()
+    
+    # Check banned words
     for word in banned_words:
         if word in name_upper:
             return False
+    
+    # Patterns to block:
+    # P..RN
+    # F..U..K
+    # F..C..K
+    # F..C
+    patterns = [
+        r'P.{0,2}R.{0,2}N',
+        r'F.{0,2}U.{0,2}K',
+        r'F.{0,2}C.{0,2}K',
+        r'F.{0,2}C'
+    ]
+    
+    for pat in patterns:
+        if re.search(pat, name_upper):
+            return False
+    
     return True
 
 if sendtowebhook:
@@ -58,9 +77,9 @@ def main():
             if name in tried:
                 continue
 
-            # Skip usernames containing banned words
+            # Skip usernames containing banned words or patterns
             if not is_valid_username(name):
-                print(f'{Fore.RED}{name} contains banned words, skipping.')
+                print(f'{Fore.RED}{name} contains banned words or patterns, skipping.')
                 tried.add(name)
                 with open(tried_file, "a") as f:
                     f.write(name + "\n")

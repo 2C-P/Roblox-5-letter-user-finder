@@ -17,7 +17,7 @@ init()
 banned_words = [
     "FUC", "FUK", "ASS", "SEX", "DIK", "DIH", "KYS", "BAO", 
     "NIG", "SHT", "KKK", "HOE", "DCK", "DKS", "SLT", "CUM", 
-    "SMN", "FCK", "FAG", "GAY"
+    "SMN", "FCK", "FAG", "GAY", "PUS"
 ]
 
 # File to store tried usernames

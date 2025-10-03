@@ -4,7 +4,7 @@ from dhooks import Webhook, Embed
 
 ## CONFIG
 sendtowebhook = True  ## (False, True) 
-yourwebhook = "https://discord.com/api/webhooks/1423644290852327527/5bOkzssfT6NYFRQxdREjanFY21Cyj7KXx_Zr2sGbdvApRx-uxAps9fzCzlH_i3JP6C9S"
+yourwebhook = "https://discord.com/api/webhooks/1423639114431074450/JP8YQZy-0Tl77lTiGRTRwohhP__3vcdAvXOsvrhvUr5p9IyedRpRZxj4mTl35BpgQ_rk"
 min = 5
 max = 5
 threads = 2  ## keep this at 1 if using webhook, otherwise you can increase
@@ -40,12 +40,12 @@ def namegen():
 def is_valid_username(name):
     """Check if username contains banned words or specific patterns."""
     name_upper = name.upper()
-    
+
     # Check banned words
     for word in banned_words:
         if word in name_upper:
             return False
-    
+
     # Patterns to block:
     # P..RN
     # F..U..K
@@ -57,11 +57,11 @@ def is_valid_username(name):
         r'F.{0,2}C.{0,2}K',
         r'F.{0,2}C'
     ]
-    
+
     for pat in patterns:
         if re.search(pat, name_upper):
             return False
-    
+
     return True
 
 if sendtowebhook:
@@ -72,18 +72,9 @@ def main():
     try:
         while True:
             name = namegen().upper()
-            
+
             # Skip usernames already tried
             if name in tried:
-                continue
-
-            # Skip usernames containing banned words or patterns
-            if not is_valid_username(name):
-                print(f'{Fore.RED}{name} contains banned words or patterns, skipping.')
-                tried.add(name)
-                with open(tried_file, "a") as f:
-                    f.write(name + "\n")
-                total_tried += 1
                 continue
 
             # Check if username exists on Roblox
@@ -93,7 +84,7 @@ def main():
                 data = r.json()
             except requests.exceptions.RequestException as e:
                 print(f'{Fore.RED}Network error for {name}: {e}')
-                time.sleep(request_delay)  # small delay and retry next loop
+                time.sleep(request_delay)
                 continue
             except Exception as e:
                 print(f'{Fore.RED}Unexpected error for {name}: {e}')
@@ -108,21 +99,24 @@ def main():
 
             # Username is free
             if "data" in data and len(data["data"]) == 0:
-                print(f'{Fore.GREEN}{name} Is Not Taken! (Tried: {total_tried}, Free: {total_free+1})')
-                total_free += 1
-                with open("usernames.txt", "a") as f:
-                    f.write(name + "\n")
+                if not is_valid_username(name):
+                    # Free but contains banned word/pattern
+                    print(f'{Fore.RED}{name} is available but contains banned word/pattern!')
+                else:
+                    print(f'{Fore.GREEN}{name} Is Not Taken! (Tried: {total_tried}, Free: {total_free+1})')
+                    total_free += 1
+                    with open("usernames.txt", "a") as f:
+                        f.write(name + "\n")
 
-                if sendtowebhook:
-                    embed = Embed(title='New Username Sniped!', color=0x00e3fd)
-                    embed.add_field(name='Username', value=f'{name}')
-                    embed.add_field(name='Register Here!', value=f'Here!')
-                    setwebhook.execute(embed=embed)
+                    if sendtowebhook:
+                        embed = Embed(title='New Username Sniped!', color=0x00e3fd)
+                        embed.add_field(name='Username', value=f'{name}')
+                        embed.add_field(name='Register Here!', value=f'Here!')
+                        setwebhook.execute(embed=embed)
             else:
                 # Username is taken
                 print(f'{Fore.RED}{name} is already taken. (Tried: {total_tried})')
 
-            # Small delay to reduce API issues
             time.sleep(request_delay)
 
     except KeyboardInterrupt:
